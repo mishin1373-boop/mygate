@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-landing Antique Gate - Smooth Edition</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0d0a07;
+            font-family: 'Georgia', serif;
+        }
+
+        .gate-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            perspective: 1500px;
+        }
+
+        /* Деревянные ворота */
+        .door {
+            position: absolute;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: repeating-linear-gradient(90deg, #3d2314 0px, #3d2314 40px, #361f12 41px, #361f12 80px),
+                        linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.6) 100%);
+            background-blend-mode: multiply;
+            border: 12px solid #2b180d;
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.7);
+            /* Увеличили время анимации до 2.5 секунд для максимальной плавности */
+            transition: transform 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+        }
+
+        .door-left {
+            left: 0;
+            transform-origin: left center;
+            border-right: 6px solid #1a0e08;
+            justify-content: flex-end;
+        }
+
+        .door-right {
+            right: 0;
+            transform-origin: right center;
+            border-left: 6px solid #1a0e08;
+            justify-content: flex-start;
+        }
+
+        /* Кованые элементы */
+        .iron-hinge {
+            position: absolute;
+            width: 70%;
+            height: 20px;
+            background: linear-gradient(to bottom, #2c2c2c, #111111);
+            border: 1px solid #444;
+            box-shadow: 0 4px 5px rgba(0,0,0,0.5);
+        }
+        .door-left .iron-hinge { left: 0; transform-origin: left center; }
+        .door-right .iron-hinge { right: 0; transform-origin: right center; }
+        .hinge-top { top: 20%; }
+        .hinge-bottom { bottom: 20%; }
+
+        .handle-knocker {
+            width: 60px;
+            height: 60px;
+            border: 8px solid #222;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+            background: transparent;
+            z-index: 3;
+        }
+        .door-left .handle-knocker { margin-right: 30px; }
+        .door-right .handle-knocker { margin-left: 30px; }
+
+        /* Контейнер букв */
+        .welcome-container {
+            position: absolute;
+            display: flex;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .welcome-letter {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #d4af37;
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.4), 0 4px 10px rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            transform: translateY(30px) scale(0.85);
+            /* Сделали вылет букв более мягким и вальяжным (0.9 секунды на букву) */
+            transition: transform 0.9s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.9s;
+            margin: 0 6px;
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 12%;
+            color: #a38f75;
+            font-size: 1.1rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            z-index: 3;
+            pointer-events: none;
+            transition: opacity 0.4s;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            animation: pulse 2.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* --- СОСТОЯНИЕ ОТКРЫТИЯ --- */
+        .gate-wrapper.opened .door-left {
+            transform: rotateY(-105deg);
+        }
+
+        .gate-wrapper.opened .door-right {
+            transform: rotateY(105deg);
+        }
+
+        .gate-wrapper.opened .hint {
+            opacity: 0;
+        }
+
+        .gate-wrapper.opened .welcome-letter {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Увеличенные задержки появления шага букв для величественного эффекта */
+        .gate-wrapper.opened .welcome-letter:nth-child(1) { transition-delay: 0.4s; }
+        .gate-wrapper.opened .welcome-letter:nth-child(2) { transition-delay: 0.65s; }
+        .gate-wrapper.opened .welcome-letter:nth-child(3) { transition-delay: 0.9s; }
+        .gate-wrapper.opened .welcome-letter:nth-child(4) { transition-delay: 1.15s; }
+        .gate-wrapper.opened .welcome-letter:nth-child(5) { transition-delay: 1.4s; }
+        .gate-wrapper.opened .welcome-letter:nth-child(6) { transition-delay: 1.65s; }
+        .gate-wrapper.opened .welcome-letter:nth-child(7) { transition-delay: 1.9s; }
+
+        @media (max-width: 768px) {
+            .welcome-letter { font-size: 3rem; margin: 0 3px; }
+            .door { border-width: 6px; }
+            .iron-hinge { height: 12px; }
+            .handle-knocker { width: 40px; height: 40px; border-width: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="gate-wrapper" id="gateContainer">
+        <div class="welcome-container">
+            <span class="welcome-letter">W</span>
+            <span class="welcome-letter">e</span>
+            <span class="welcome-letter">l</span>
+            <span class="welcome-letter">c</span>
+            <span class="welcome-letter">o</span>
+            <span class="welcome-letter">m</span>
+            <span class="welcome-letter">e</span>
+        </div>
+        
+        <div class="hint">Click or Hover to Enter</div>
+
+        <div class="door door-left">
+            <div class="iron-hinge hinge-top"></div>
+            <div class="iron-hinge hinge-bottom"></div>
+            <div class="handle-knocker"></div>
+        </div>
+        
+        <div class="door door-right">
+            <div class="iron-hinge hinge-top"></div>
+            <div class="iron-hinge hinge-bottom"></div>
+            <div class="handle-knocker"></div>
+        </div>
+    </div>
+
+    <script>
+        const gate = document.getElementById('gateContainer');
+        const offerUrl = "https://promo.paysell.net/y6jpa8dn"; // Замените на вашу ссылку
+        
+        let isActivated = false;
+
+        function openGateAndRedirect() {
+            if (isActivated) return;
+            isActivated = true;
+
+            gate.classList.add('opened');
+
+            // Время редиректа увеличено до 3000 мс (3 секунды)
+            setTimeout(() => {
+                window.location.href = offerUrl;
+            }, 3000);
+        }
+
+        gate.addEventListener('mouseenter', openGateAndRedirect);
+        gate.addEventListener('click', openGateAndRedirect);
+    </script>
+</body>
+</html>
